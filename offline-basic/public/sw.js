@@ -1,15 +1,23 @@
-self.addEventListener('fetch', event => {
-    
+self.addEventListener('install', event => {
 
-    const offlineResponse = fetch('pages/offline.html', event=>{
+    const cacheAppShell = caches.open('cache-1') .then(cache =>{
 
-        const resp = fetch(event.request)
-            .catch(()=>offlineResponse)
+            return cache.addAll([
+                '/',
+                '/index.html',
+                '/js/app.js',
+                '/sw.js',
+                'static/js/bundle.js',
+                'favicon.ico',
+            ])
 
-            event.respondWith(resp)
+        })
 
-    })
-    
-
-    
+        event.waitUntil(cacheAppShell)
+        
 })
+
+self.addEventListener('fetch', event => {
+
+    event.respondWith(caches.match(event.request))
+    })
